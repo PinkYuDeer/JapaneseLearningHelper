@@ -1,5 +1,5 @@
 name: snk
-run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
+run-name: Update snk to ${{ inputs.deploy_target }} by @${{ github.actor }}
 on: 
   push:
   schedule:
