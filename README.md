@@ -45,6 +45,9 @@ python main.py
 - 答题速度从点击下一题按钮开始，到点击展示答案结束
 - 本项目不会自动判断答题正确与否，需要用户手动点击展示答案按钮来判断答题是否正确
 
+
+
+### 个人活跃度：
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/PinkYuDeer/JapaneseLearningHelper/snk/github-contribution-grid-snake-dark.svg" />
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/PinkYuDeer/JapaneseLearningHelper/snk/github-contribution-grid-snake.svg" />
