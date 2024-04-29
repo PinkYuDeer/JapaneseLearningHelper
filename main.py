@@ -276,14 +276,18 @@ class Record:
             if mistake_recall.full():
                 mistake_recall.get()
             mistake_recall.put(value)
+
             # value['question']可能是平假名，也可能是片假名、罗马音，所以需要加上value['question_type']来区分，将其转化为罗马音
             _question = value['question']
-
             if value['question_type'] == 2:
                 _question = get_romanji_by_katakana(_question)
             elif value['question_type'] == 3:
                 _question = get_romanji_by_hiragana(_question)
+
+            # 根据答题情况调整权重
             if value['type'] == 0:
+                # 如果正确，权重减少
+                # 根据答题速度调整权重改编，同时避免答题过慢导致权重过高的情况
                 _p = math.sqrt(avg_time / value['used_time']) / 3
                 if _p < 1:
                     _p = 1
@@ -292,6 +296,8 @@ class Record:
                     if k[:-1] == _question and k[-1] != str(value['question_type']):
                         self.weight[k] -= 20 * _p
             else:
+                # 如果错误，权重增加
+                # 根据答题速度调整权重改编，同时避免答题过慢导致权重过低的情况
                 _p = avg_time / value['used_time'] / 5
                 if _p < 1:
                     _p = 1
@@ -300,11 +306,11 @@ class Record:
                     if k[:-1] == _question and k[-1] != str(value['question_type']):
                         self.weight[k] += 20 * math.pow(_p, 2)
 
-            if _question == 'shi':
-                pass
+            # 本次记录的罗马音所有问题的权重减少10
             for k, v in self.weight.items():
-                if k[:-1] != _question:
-                    self.weight[k] += 1
+                if k[:-1] == _question:
+                    self.weight[k] -= 10
+
         # 将记录中的答错记录倒数5-10的记录的权重增加200
         # 如果少于5个记录，则跳过
         if mistake_recall.qsize() >= 5:
@@ -323,6 +329,19 @@ class Record:
                             self.weight[k] += 400
                         else:
                             self.weight[k] += 200
+
+        # 将记录中的记录倒数0-5的记录的罗马音的所有问题权重减少到最小值-100
+        min_weight = min(self.weight.values())
+        for i in range(min(5, len(self.records))):
+            _record = mistake_recall.get()
+            _question = _record['question']
+            if _record['question_type'] == 2:
+                _question = get_romanji_by_katakana(_question)
+            elif _record['question_type'] == 3:
+                _question = get_romanji_by_hiragana(_question)
+            for k, v in self.weight.items():
+                if k[:-1] == _question:
+                    self.weight[k] = min_weight - 100
 
         # 将权重压缩到0-1000之间
         max_weight = max(self.weight.values())
@@ -353,7 +372,6 @@ class Record:
         # TODO: 将每次添加单独计算权重、总结，减少计算次数
 
     # 根据权重获取问题
-    # TODO: 五次内不重复、增加问题出现次数的权重，出现次数越多，权重越低
     def get_question_by_weight(self):
         # 首先，计算问题类型的权重，根据权重加权选择一种问题
         question_type_weight = {}
