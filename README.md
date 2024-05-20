@@ -1,3 +1,6 @@
+# 【！！重要！！】
+## 此项目已经废弃，因为找到了更好、更成熟的项目：anki！电脑手机平板通用！
+
 # 日语学习助手
 <div align="right">
     <a href="https://raw.githubusercontent.com/PinkYuDeer/JapaneseLearningHelper/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/PinkYuDeer/JapaneseLearningHelper"></a>
